@@ -5,7 +5,7 @@ Given /^send pet_id '(\d+)'$/ do |pet_id|
   @response = RestClient.get("#{url}pet/#{pet_id}", headers) {|response, request, result| response }
 end
 
-Given /^send valid post request with pet_id '(\d+)' and '(\w+)'?/ do |pet_id, pet_name|
+Given /^send post request with pet_id: '(.*)' and name: '([^'|'$]*)'?/ do |pet_id, pet_name|
   request = {
       "id": pet_id,
       "category": {
@@ -13,6 +13,28 @@ Given /^send valid post request with pet_id '(\d+)' and '(\w+)'?/ do |pet_id, pe
           "name": "string"
       },
       "name": pet_name,
+      "photoUrls": [
+          "string"
+      ],
+      "tags": [
+          {
+              "id": 0,
+              "name": "string"
+          }
+      ],
+      "status": "available"
+  }
+  @response = RestClient.post("#{url}pet", request.to_json, headers) {|response, request, result| response }
+end
+
+Given /^send post request with pet_id: '(.*)' and without pet_name?/ do |pet_id|
+  request = {
+      "id": pet_id,
+      "category": {
+          "id": 0,
+          "name": "string"
+      },
+      "name": nil,
       "photoUrls": [
           "string"
       ],
@@ -35,7 +57,29 @@ And /^pet_id equal '(\d+)'$/ do |pet_id|
   expect(JSON.parse(@response)['id']).to eq(pet_id)
 end
 
-
-And /^pet_name equal '(\w+)'$/ do |pet_name|
+And /^pet_name equal '([^'|'$]*)'$/ do |pet_name|
   expect(JSON.parse(@response)["name"]).to eq(pet_name)
+end
+
+
+Given(/^send request with invalid pet_status: '([^'|'$]*)'$/) do |pet_status|
+  request = {
+      "id": 3,
+      "category": {
+          "id": 3,
+          "name": "string"
+      },
+      "name": nil,
+      "photoUrls": [
+          "string"
+      ],
+      "tags": [
+          {
+              "id": 0,
+              "name": "string"
+          }
+      ],
+      "status": "pet_status"
+  }
+  @response = RestClient.post("#{url}pet", request.to_json, headers) {|response, request, result| response }
 end
