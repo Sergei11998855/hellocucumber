@@ -1,3 +1,5 @@
+require_relative '../handlers/post_pet_handler'
+
 url = "https://petstore.swagger.io/v2/"
 headers = {'Content-Type': 'application/json', 'accept': 'application/json'}
 
@@ -6,25 +8,8 @@ Given /^send pet_id '(\d+)'$/ do |pet_id|
 end
 
 Given /^send post request with pet_id: '(.*)' and name: '([^'|'$]*)'?/ do |pet_id, pet_name|
-  request = {
-      "id": pet_id,
-      "category": {
-          "id": 0,
-          "name": "string"
-      },
-      "name": pet_name,
-      "photoUrls": [
-          "string"
-      ],
-      "tags": [
-          {
-              "id": 0,
-              "name": "string"
-          }
-      ],
-      "status": "available"
-  }
-  @response = RestClient.post("#{url}pet", request.to_json, headers) {|response, request, result| response }
+  request = PostPet.request_with_id_and_name(pet_id, pet_name)
+  @response = RestClient.post("#{url}pet", request, headers) {|response, request, result| response }
 end
 
 Given /^send post request with pet_id: '(.*)' and without pet_name?/ do |pet_id|
